@@ -5,6 +5,7 @@ from sqlalchemy import (
     Text,
     Unicode,
     DateTime,
+    Boolean,
     ForeignKey,
     )
 
@@ -40,13 +41,15 @@ class TPresenter(Base):
 class TBibleBooks(Base):
     __tablename__ = 'tBibleBooks'
     ixBibleBook = Column(Integer, primary_key=True)
+    bOldTestament = Column(Boolean)
     sBook = Column(Unicode(30))
+    sAbbrev = Column(Unicode(10))
     iOrder = Column(Integer)
 
-class TChapterAndVerse(Base):
+class TChapter(Base):
     "Describes the chapter and verse layout for proper references"
-    __tablename__ = 'tChapterAndVerse'
-    ixChapterAndVerse = Column(Integer, primary_key=True)
+    __tablename__ = 'tChapter'
+    ixChapter = Column(Integer, primary_key=True)
     ixBibleBook = Column(Integer, ForeignKey('tBibleBooks.ixBibleBook'))
     iChapter = Column(Integer)
     iMaxVerse = Column(Integer) # Each chapter gets a maximum verse
@@ -56,7 +59,6 @@ class TChapterAndVerse(Base):
 
     ref = relationship("TScriptureReference",
                        backref=backref('chap_and_verse'))
-
 
 
 class TOtherSources(Base):
@@ -69,9 +71,11 @@ class TOtherSources(Base):
 class TScriptureReference(Base):
     __tablename__ = 'tScriptureReference'
     ixScriptureReference = Column(Integer, primary_key=True)
-    ixChapterAndVerse = Column(Integer, ForeignKey('tChapterAndVerse.ixChapterAndVerse'))
+    ixChapter = Column(Integer, ForeignKey('tChapter.ixChapter'))
     iVerseLower = Column(Integer, nullable = False)
+    sVerseLowerPart = Column(Unicode(2), nullable=True) # for references that include 1a or 2b
     iVerseUpper = Column(Integer, nullable = True)
+    sVerseUpperPart = Column(Unicode(2), nullable=True) # for references that include 1a or 2b
 
 
 class TReading(Base):
