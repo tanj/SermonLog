@@ -3,6 +3,7 @@ import sys
 import transaction
 import pysword.books
 
+
 from sqlalchemy import engine_from_config
 
 from pyramid.paster import (
@@ -16,7 +17,30 @@ from ..models import (
     DBSession,
     Base,
     TTitle,
+    TPresenter,
+    TBibleBook,
+    TChapter,
+    TEventType,
     )
+
+import re
+
+def roman_to_int(n):
+    n = str(n).upper()
+    numeral_map = zip((1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1),
+                      ('M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'))
+
+    i = result = 0
+    for integer, numeral in numeral_map:
+        while n[i:i + len(numeral)] == numeral:
+            result += integer
+            i += len(numeral)
+    return result
+
+def roman_to_int_repl(match):
+    return str(roman_to_int(match.group(0)))
+
+roman_regex = re.compile(r'\b(?=[MDCLXVI]+\b)M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})\b')
 
 
 def usage(argv):
@@ -171,6 +195,57 @@ def main(argv=sys.argv):
                                  sLastName='Moerdyk',
                                  sSaName='Pastor Eric Moerdyk'),]
         DBSession.add_all(presenters)
+
+        chapters = []
+        for testament, books in pysword.books.testaments.items():
+            iOrder = 1
+            for b in books:
+                tbook = TBibleBook(bOldTestament= (testament == 'ot'),
+                                   # sermon audio doesn't like roman numerals so replace them with integers
+                                   sBook=roman_regex.sub(roman_to_int_repl, b.name),
+                                   sAbbrev=b.preferred_abbreviation,
+                                   iOrder=iOrder,
+                                   iNumChapters=b.num_chapters)
+
+                for chap, verses in enumerate(b.chapter_lengths):
+                    chapters.append(TChapter(iChapter=chap + 1,
+                                             iMaxVerse=verses,
+                                             book=tbook))
+                iOrder = iOrder + 1
+
+        DBSession.add_all(chapters)
+
+        event_types = [TEventType(sEventType='Audio Book'),
+                       TEventType(sEventType='Bible Study'),
+                       TEventType(sEventType='Camp Meeting'),
+                       TEventType(sEventType='Chapel Service'),
+                       TEventType(sEventType='Children'),
+                       TEventType(sEventType='Conference'),
+                       TEventType(sEventType='Current Events'),
+                       TEventType(sEventType='Debate'),
+                       TEventType(sEventType='Devotional'),
+                       TEventType(sEventType='Funeral Service'),
+                       TEventType(sEventType='Midweek Service'),
+                       TEventType(sEventType='Podcast'),
+                       TEventType(sEventType='Prayer Meeting'),
+                       TEventType(sEventType='Question & Answer'),
+                       TEventType(sEventType='Radio Broadcast'),
+                       TEventType(sEventType='Special Meeting'),
+                       TEventType(sEventType='Sunday - AM'),
+                       TEventType(sEventType='Sunday - PM'),
+                       TEventType(sEventType='Sunday Afternoon'),
+                       TEventType(sEventType='Sunday School'),
+                       TEventType(sEventType='Sunday Service'),
+                       TEventType(sEventType='Teaching'),
+                       TEventType(sEventType='Testimony'),
+                       TEventType(sEventType='TV Broadcast'),
+                       TEventType(sEventType='Video DVD'),
+                       TEventType(sEventType='Wedding'),
+                       TEventType(sEventType='Youth'),]
+        DBSession.add_all(event_types)
+
+            # TODO loop through books and build TBibleBook objects
+
 
     #     model = MyModel(name='one', value=1)
     #     DBSession.add(model)
