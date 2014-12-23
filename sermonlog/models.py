@@ -38,23 +38,24 @@ class TPresenter(Base):
 
     title = relationship("TTitle")
 
-class TBibleBooks(Base):
-    __tablename__ = 'tBibleBooks'
+class TBibleBook(Base):
+    __tablename__ = 'tBibleBook'
     ixBibleBook = Column(Integer, primary_key=True)
     bOldTestament = Column(Boolean)
     sBook = Column(Unicode(30))
     sAbbrev = Column(Unicode(10))
     iOrder = Column(Integer)
+    iNumChapters = Column(Integer)
 
 class TChapter(Base):
     "Describes the chapter and verse layout for proper references"
     __tablename__ = 'tChapter'
     ixChapter = Column(Integer, primary_key=True)
-    ixBibleBook = Column(Integer, ForeignKey('tBibleBooks.ixBibleBook'))
+    ixBibleBook = Column(Integer, ForeignKey('tBibleBook.ixBibleBook'))
     iChapter = Column(Integer)
     iMaxVerse = Column(Integer) # Each chapter gets a maximum verse
 
-    book = relationship("TBibleBooks",
+    book = relationship("TBibleBook",
                         backref=backref('chap_and_verse'))
 
     ref = relationship("TScriptureReference",
