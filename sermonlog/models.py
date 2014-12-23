@@ -34,7 +34,7 @@ class TPresenter(Base):
     ixTitle = Column(Integer, ForeignKey('tTitle.ixTitle'))
     sFirstName = Column(Unicode(30))
     sLastName = Column(Unicode(40))
-    sSaName = Column(Unicode(50)) # The sermon audio name
+    sSaName = Column(Unicode(70)) # The sermon audio name
 
     title = relationship("TTitle")
 
