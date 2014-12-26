@@ -62,9 +62,9 @@ class TChapter(Base):
                        backref=backref('chap_and_verse'))
 
 
-class TOtherSources(Base):
-    __tablename__ = 'tOtherSources'
-    ixOtherSources = Column(Integer, primary_key=True)
+class TOtherSource(Base):
+    __tablename__ = 'tOtherSource'
+    ixOtherSource = Column(Integer, primary_key=True)
     sSourceName = Column(Unicode(255))
     sReference = Column(Unicode(255))
     
@@ -84,11 +84,11 @@ class TReading(Base):
     ixReading = Column(Integer, primary_key=True)
     ixPresentation = Column(Integer, ForeignKey('tPresentation.ixPresentation'))
     ixScriptureReference = Column(Integer, ForeignKey('tScriptureReference.ixScriptureReference'), nullable=True)
-    ixOtherSources = Column(Integer, ForeignKey('tOtherSources.ixOtherSources'), nullable=True)
+    ixOtherSource = Column(Integer, ForeignKey('tOtherSource.ixOtherSource'), nullable=True)
 
     scripture = relationship("TScriptureReference",
                              backref=backref('reading'))
-    other_source = relationship("TOtherSources",
+    other_source = relationship("TOtherSource",
                                 backref=backref('reading'))
     
 
