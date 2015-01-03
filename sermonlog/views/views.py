@@ -3,20 +3,30 @@ from pyramid.view import view_config
 
 from sqlalchemy.exc import DBAPIError
 
-from .models import (
+from ..models import (
     DBSession,
-#    MyModel,
+    TPresenter,
     )
 
+# TODO
+# Needed views:
+# 1. List of Sermons with filter options
+# 2. Add Sermon form
+# 3. Export Sermon info 
+#     - Info to be imported to audacity or mp3 tag edit program
+#     - Form write to sermon audio submit sermon form (API calls if they exist)
+# 4. Add other source
+# 5. Free form Search will need to detect scripture refs, presenters, and other
+#    key words
 
-@view_config(route_name='home', renderer='templates/mytemplate.jinja2')
+
+@view_config(route_name='home', renderer='sermonlog:templates/child.jinja2')
 def my_view(request):
     try:
-#        one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-        one = None
+        one = DBSession.query(TPresenter).first()
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'project': 'SermonLog'}
+    return {'one': one, 'title': 'My View'}
 
 
 conn_err_msg = """\

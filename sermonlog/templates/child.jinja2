@@ -1,0 +1,15 @@
+{% extends "base.jinja2" %}
+{% block title %}{{ title }}{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>{{ title }}</h1>
+    <p class="important">
+      Welcome on my awesome homepage.
+    </p>
+    <p>{{ one.title.sTitle }} {{ one.sFirstName }} {{ one.sLastName }}</p>
+{% endblock %}

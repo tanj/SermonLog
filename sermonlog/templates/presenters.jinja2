@@ -1,0 +1,9 @@
+{% extends "base.jinja2" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+   <ul>
+   {% for pre in presenters %}
+       <li>{{ pre.title.sTitle }}. {{ pre.sFirstName }} {{ pre.sLastName }}</li>
+   {% endfor %}
+   </ul>
+{% endblock %}
