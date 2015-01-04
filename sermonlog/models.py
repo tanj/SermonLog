@@ -43,9 +43,9 @@ class TPresenter(Base):
     __plural__ = 'Presenters'
     ixPresenter = Column(Integer, primary_key=True)
     ixTitle = Column(Integer, ForeignKey('tTitle.ixTitle'))
-    sFirstName = Column(Unicode(30))
-    sLastName = Column(Unicode(40))
-    sSaName = Column(Unicode(70)) # The sermon audio name
+    sFirstName = Column(Unicode(30), label='First Name')
+    sLastName = Column(Unicode(40), label='Last Name')
+    sSaName = Column(Unicode(70), label='Sermon Audio Name') # The sermon audio name
 
     title = relationship("TTitle")
 
@@ -59,11 +59,11 @@ class TBibleBook(Base):
     __label__ = 'Bible Book'
     __plural__ = 'Bible Books'
     ixBibleBook = Column(Integer, primary_key=True)
-    bOldTestament = Column(Boolean)
-    sBook = Column(Unicode(30))
-    sAbbrev = Column(Unicode(10))
-    iOrder = Column(Integer)
-    iNumChapters = Column(Integer)
+    bOldTestament = Column(Boolean, label='Is Old Testament')
+    sBook = Column(Unicode(30), label='Book')
+    sAbbrev = Column(Unicode(10), label='Abbreviation')
+    iOrder = Column(Integer, label='Order')
+    iNumChapters = Column(Integer, label='Number of Chapters')
 
     def __repr__(self):
         r = ("<TBibleBook(ixBibleBook:{s.ixBibleBook} bOldTestament={s.bOldTestament}, "
@@ -77,8 +77,8 @@ class TChapter(Base):
     __plural__ = 'Chapters'
     ixChapter = Column(Integer, primary_key=True)
     ixBibleBook = Column(Integer, ForeignKey('tBibleBook.ixBibleBook'))
-    iChapter = Column(Integer)
-    iMaxVerse = Column(Integer) # Each chapter gets a maximum verse
+    iChapter = Column(Integer, label='Chapter')
+    iMaxVerse = Column(Integer, label='Number of Verses') # Each chapter gets a maximum verse
 
     book = relationship("TBibleBook",
                         backref=backref('chap_and_verse'))
@@ -96,8 +96,8 @@ class TOtherSource(Base):
     __label__ = 'Other Source'
     __plural__ = 'Other Sources'
     ixOtherSource = Column(Integer, primary_key=True)
-    sSourceName = Column(Unicode(255))
-    sReference = Column(Unicode(255))
+    sSourceName = Column(Unicode(255), label='Source Name')
+    sReference = Column(Unicode(255), label='Reference')
 
     def __repr__(self):
         r = ("<TOtherSource(ixOtherSource: {s.ixOtherSource} sSourceName={s.sSourceName!r}, "
@@ -146,7 +146,7 @@ class TEventType(Base):
     __label__ = 'Event Type'
     __plural__ = 'Event Types'
     ixEventType = Column(Integer, primary_key=True)
-    sEventType = Column(Unicode(50))
+    sEventType = Column(Unicode(50), label='Event Type')
 
     def __repr__(self):
         r = ("<TEventType(ixEventType: {s.ixEventType}, sEventType={s.sEventType!r})>")
@@ -171,10 +171,10 @@ class TPresentation(Base):
     ixEventType = Column(Integer, ForeignKey('tEventType.ixEventType'))
     ixText = Column(Integer, ForeignKey('tScriptureReference.ixScriptureReference'), nullable=True)
     ixSeries = Column(Integer, ForeignKey('tSeries.ixSeries'), nullable=True)
-    sTitle = Column(Unicode(255))
-    sTheme = Column(Text)
-    sComments = Column(Text) # Sermon points, general description, etc.
-    dtStart = Column(DateTime) # This will give us AM/PM info
+    sTitle = Column(Unicode(255), label='Title')
+    sTheme = Column(Text, label='Theme')
+    sComments = Column(Text, label='Comments') # Sermon points, general description, etc.
+    dtStart = Column(DateTime, label='Start of Presentation') # This will give us AM/PM info
 
     readings = relationship("TReading",
                             backref=backref('presentation'))
