@@ -151,6 +151,17 @@ class TEventType(Base):
         r = ("<TEventType(ixEventType: {s.ixEventType}, sEventType={s.sEventType!r})>")
         return r.format(s=self)
 
+class TSeries(Base):
+    __tablename__ = 'tSeries'
+    __label__ = 'Series'
+    __plural__ = 'Series'
+    ixSeries = Column(Integer, primary_key=True)
+    sTitle = Column(Unicode(255))
+
+    def __repr__(self):
+        r = ("<TSeries(ixSeries:{s.ixSeries} sTitle{s.sTitle!r})>")
+        return r.format(s=self)
+
 class TPresentation(Base):
     __tablename__ = 'tPresentation'
     __label__ = 'Presentation'
@@ -158,7 +169,7 @@ class TPresentation(Base):
     ixPresentation = Column(Integer, primary_key=True)
     ixEventType = Column(Integer, ForeignKey('tEventType.ixEventType'))
     ixText = Column(Integer, ForeignKey('tScriptureReference.ixScriptureReference'), nullable=True)
-    sSeries = Column(Unicode(255))
+    ixSeries = Column(Integer, ForeignKey('tSeries.ixSeries'), nullable=True)
     sTitle = Column(Unicode(255))
     sTheme = Column(Text)
     sComments = Column(Text) # Sermon points, general description, etc.
@@ -167,12 +178,12 @@ class TPresentation(Base):
     readings = relationship("TReading",
                             backref=backref('presentation'))
 
+    series = relationship("TSeries",
+                          backref=backref('presentation'))
+
     def __repr__(self):
         r = ("<TPresentation(ixPresentation: {s.ixPresentation}, ixEventType={s.ixEventType}, "
              "ixText={s.ixText}, "
              "sSeries={s.sSeries!r}, sTitle={s.sTitle!r}, sTheme={s.sTheme!r}, "
              "sComments={s.sComments!r}, dtStart={s.dtStart})>")
         return r.format(s=self)
-
-Index('series_index', TPresentation.sSeries)
-#Index('my_index', MyModel.name, unique=True, mysql_length=255)
