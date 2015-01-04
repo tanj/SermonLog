@@ -18,6 +18,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'py-postgresql',
+    'formalchemy',
     ]
 
 setup(name='SermonLog',
