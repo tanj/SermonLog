@@ -157,7 +157,7 @@ class TSeries(Base):
     __label__ = 'Series'
     __plural__ = 'Series'
     ixSeries = Column(Integer, primary_key=True)
-    sTitle = Column(Unicode(255))
+    sTitle = Column(Unicode(255), label='Title')
 
     def __repr__(self):
         r = ("<TSeries(ixSeries:{s.ixSeries} sTitle{s.sTitle!r})>")
