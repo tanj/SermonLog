@@ -1,9 +1,10 @@
 {% extends "base.jinja2" %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
+<h1>{{ title }}</h1>
    <ul>
    {% for pre in presenters %}
-       <li>{{ pre.title.sTitle }}. {{ pre.sFirstName }} {{ pre.sLastName }}</li>
+       <li><a href="presenter/{{ pre.ixPresenter }}">{{ pre.title.sTitle }}. {{ pre.sFirstName }} {{ pre.sLastName }}</a></li>
    {% endfor %}
    </ul>
 {% endblock %}
