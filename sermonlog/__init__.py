@@ -15,6 +15,8 @@ def main(global_config, **settings):
     Base.metadata.bind = engine
     config = Configurator(settings=settings)
     config.include('pyramid_jinja2')
+    # pyramid_formalchemy's configuration
+    config.include('formalchemy')
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('presenters', '/presenters')

@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Column,
+#    Column,
     Index,
     Integer,
     Text,
@@ -8,6 +8,8 @@ from sqlalchemy import (
     Boolean,
     ForeignKey,
     )
+
+from formalchemy import Column
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -29,12 +31,11 @@ class TTitle(Base):
     __plural__ = 'Titles'
     ixTitle = Column(Integer, primary_key=True)
     sTitle = Column(Unicode(10),
-                    nullable=False)
+                    nullable=False,
+                    label='Title')
 
     def __repr__(self):
         return "<TTitle(ixTitle:{s.ixTitle} sTitle={s.sTitle!r})>".format(s=self)
-
-
 
 class TPresenter(Base):
     __tablename__ = 'tPresenter'
