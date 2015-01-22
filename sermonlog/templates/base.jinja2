@@ -26,11 +26,22 @@
   </head>
 
   <body>
-    <div id="content">{% block content %}{% endblock %}</div>
-    <div id="footer">
+    <header>
+      {% block header %}{% endblock %}
+    </header>
+
+    <nav>
+      {% block nav %}{% endblock %}
+    </nav>
+
+    <main>
+      {% block main %}{% endblock %}
+    </main>
+
+    <footer>
       {% block footer %}
       &copy; Copyright 2015 by John teBokkel
       {% endblock %}
-    </div>
+    </footer>
   </body>
 </html>
