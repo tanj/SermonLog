@@ -9,6 +9,8 @@ from ..models import (
     TTitle,
     )
 
+from formalchemy import FieldSet
+
 @view_config(route_name='presenters', renderer='sermonlog:templates/presenters.jinja2')
 def presenters(request):
     try:
@@ -22,9 +24,11 @@ def edit_presenter(request):
     try:
         presenter = DBSession.query(TPresenter).filter(
             TPresenter.ixPresenter == int(request.matchdict['ixPresenter'])).one()
+        fs = FieldSet(presenter)
+        fs.configure(exclude=[fs.title])
     except DBAPIError:
         return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'presenter' : presenter, 'title' : 'Edit Presenter'}
+    return {'presenter' : presenter, 'title' : 'Edit Presenter', 'form_render' : fs.render()}
 
 
 
