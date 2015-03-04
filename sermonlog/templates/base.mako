@@ -8,7 +8,7 @@
 </head>
 <body>
 <%!
-from faapp.model.resources import TopContext
+from sermonlog.model.resources import TopContext
 top_context_instance = TopContext(None)
 %>
 <a href="${ request.resource_url(top_context_instance) }">${ _("HOME") }</a><hr>

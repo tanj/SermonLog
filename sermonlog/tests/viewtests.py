@@ -2,8 +2,8 @@ import unittest
 
 from pyramid import testing
 
-from faapp.model import resources
-from faapp.model import meta
+from sermonlog.model import resources
+from sermonlog.model import meta
 
 class ViewTests(unittest.TestCase):
     def setUp(self):
@@ -13,7 +13,7 @@ class ViewTests(unittest.TestCase):
         testing.tearDown()
 
     def test_my_view(self):
-        from faapp.views import views
+        from sermonlog.views import views
         request = testing.DummyRequest()
         info = views.top(resources.TopContext(request), request)
         self.assertEqual(info['models'], meta.model_names)

@@ -1,7 +1,7 @@
 import unittest
 
 from pyramid import testing
-from faapp.locale import (
+from sermonlog.locale import (
         add_renderer_globals,
         add_localizer,
         includeme,

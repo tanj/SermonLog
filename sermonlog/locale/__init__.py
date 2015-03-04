@@ -24,7 +24,7 @@ def add_renderer_globals(event):
     event['ungettext'] = request.ungettext
     event['localizer'] = request.localizer
 
-tsf = TranslationStringFactory('faapp')
+tsf = TranslationStringFactory('sermonlog')
 
 def add_localizer(event):
     """
@@ -39,7 +39,7 @@ def add_localizer(event):
     def auto_translate(*args, **kwargs):
         return localizer.translate(tsf(*args, **kwargs))
     def auto_pluralize(*args, **kwargs):
-        kwargs.setdefault("domain", "faapp")
+        kwargs.setdefault("domain", "sermonlog")
         return localizer.pluralize(*args, **kwargs)
     request.localizer = localizer
     request.translate = auto_translate
@@ -50,6 +50,6 @@ def includeme(config):
     """
         Initialize the i18n system.
     """
-    config.add_translation_dirs('faapp:locale', )
-    config.add_subscriber('faapp.locale.add_renderer_globals', 'pyramid.events.BeforeRender')
-    config.add_subscriber('faapp.locale.add_localizer', 'pyramid.events.NewRequest')
+    config.add_translation_dirs('sermonlog:locale', )
+    config.add_subscriber('sermonlog.locale.add_renderer_globals', 'pyramid.events.BeforeRender')
+    config.add_subscriber('sermonlog.locale.add_localizer', 'pyramid.events.NewRequest')

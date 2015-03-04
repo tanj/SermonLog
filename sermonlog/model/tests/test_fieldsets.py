@@ -5,7 +5,7 @@
 import unittest
 from pyramid import testing
 
-from faapp.model.fieldsets import (
+from sermonlog.model.fieldsets import (
         FieldSet,
     )
 

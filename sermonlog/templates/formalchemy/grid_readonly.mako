@@ -2,7 +2,7 @@
 <%!
 import urllib.parse
 
-from faapp.model.meta import get_pk_map
+from sermonlog.model.meta import get_pk_map
 %>
 <thead>
   <tr>

@@ -37,7 +37,7 @@ class TextFieldRenderer(formalchemy.fields.FieldRenderer):
 class QFieldSet(formalchemy.FieldSet):
     """
         Used to construct a filtering form. All fields of this fieldset are
-        rendered as faapp.model.tools.TextFieldRenderer.
+        rendered as sermonlog.model.tools.TextFieldRenderer.
         Also, fields that are relations are excluded.
     """
     default_renderers = dict([

@@ -2,7 +2,7 @@
     Custom FieldSets and FieldSet base.
 """
 import formalchemy
-import faapp.model.tools
+import sermonlog.model.tools
 
 
 class FieldSet(formalchemy.FieldSet):
