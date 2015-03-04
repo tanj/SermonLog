@@ -1,29 +1,29 @@
 from sqlalchemy import (
-#    Column,
-    Index,
+    Column, ForeignKey,
     Integer,
-    Text,
-    Unicode,
-    DateTime,
-    Boolean,
-    ForeignKey,
-    )
+    String, Text, Unicode,
 
-from formalchemy import Column
+    engine_from_config,
+    )
 
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import (
-    scoped_session,
     sessionmaker,
     relationship,
-    backref,
+    mapper
     )
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
+
+def _(t):
+    """
+        Only used to mark strings to extract for translation.
+        Does not really perform any translation.
+    """
+    pass
 
 class TTitle(Base):
     __tablename__ = 'tTitle'
@@ -32,9 +32,9 @@ class TTitle(Base):
     ixTitle = Column(Integer, primary_key=True)
     sTitle = Column(Unicode(10),
                     nullable=False,
-                    label='Title')
+                    label=_('Title'))
 
-    def __unicode__(self):
+    def __str__(self):
         return self.sTitle
 
     def __repr__(self):
@@ -46,9 +46,9 @@ class TPresenter(Base):
     __plural__ = 'Presenters'
     ixPresenter = Column(Integer, primary_key=True)
     ixTitle = Column(Integer, ForeignKey('tTitle.ixTitle'))
-    sFirstName = Column(Unicode(30), label='First Name')
-    sLastName = Column(Unicode(40), label='Last Name')
-    sSaName = Column(Unicode(70), label='Sermon Audio Name') # The sermon audio name
+    sFirstName = Column(Unicode(30), label=_('First Name'))
+    sLastName = Column(Unicode(40), label=_('Last Name'))
+    sSaName = Column(Unicode(70), label=_('Sermon Audio Name')) # The sermon audio name
 
     title = relationship("TTitle")
 
@@ -62,11 +62,11 @@ class TBibleBook(Base):
     __label__ = 'Bible Book'
     __plural__ = 'Bible Books'
     ixBibleBook = Column(Integer, primary_key=True)
-    bOldTestament = Column(Boolean, label='Is Old Testament')
-    sBook = Column(Unicode(30), label='Book')
-    sAbbrev = Column(Unicode(10), label='Abbreviation')
-    iOrder = Column(Integer, label='Order')
-    iNumChapters = Column(Integer, label='Number of Chapters')
+    bOldTestament = Column(Boolean, label=_('Is Old Testament'))
+    sBook = Column(Unicode(30), label=_('Book'))
+    sAbbrev = Column(Unicode(10), label=_('Abbreviation'))
+    iOrder = Column(Integer, label=_('Order'))
+    iNumChapters = Column(Integer, label=_('Number of Chapters'))
 
     def __repr__(self):
         r = ("<TBibleBook(ixBibleBook:{s.ixBibleBook} bOldTestament={s.bOldTestament}, "
@@ -80,8 +80,8 @@ class TChapter(Base):
     __plural__ = 'Chapters'
     ixChapter = Column(Integer, primary_key=True)
     ixBibleBook = Column(Integer, ForeignKey('tBibleBook.ixBibleBook'))
-    iChapter = Column(Integer, label='Chapter')
-    iMaxVerse = Column(Integer, label='Number of Verses') # Each chapter gets a maximum verse
+    iChapter = Column(Integer, label=_('Chapter'))
+    iMaxVerse = Column(Integer, label=_('Number of Verses')) # Each chapter gets a maximum verse
 
     book = relationship("TBibleBook",
                         backref=backref('chap_and_verse'))
@@ -99,8 +99,8 @@ class TOtherSource(Base):
     __label__ = 'Other Source'
     __plural__ = 'Other Sources'
     ixOtherSource = Column(Integer, primary_key=True)
-    sSourceName = Column(Unicode(255), label='Source Name')
-    sReference = Column(Unicode(255), label='Reference')
+    sSourceName = Column(Unicode(255), label=_('Source Name'))
+    sReference = Column(Unicode(255), label=_('Reference'))
 
     def __repr__(self):
         r = ("<TOtherSource(ixOtherSource: {s.ixOtherSource} sSourceName={s.sSourceName!r}, "
@@ -149,7 +149,7 @@ class TEventType(Base):
     __label__ = 'Event Type'
     __plural__ = 'Event Types'
     ixEventType = Column(Integer, primary_key=True)
-    sEventType = Column(Unicode(50), label='Event Type')
+    sEventType = Column(Unicode(50), label=_('Event Type'))
 
     def __repr__(self):
         r = ("<TEventType(ixEventType: {s.ixEventType}, sEventType={s.sEventType!r})>")
@@ -160,7 +160,7 @@ class TSeries(Base):
     __label__ = 'Series'
     __plural__ = 'Series'
     ixSeries = Column(Integer, primary_key=True)
-    sTitle = Column(Unicode(255), label='Title')
+    sTitle = Column(Unicode(255), label=_('Title'))
 
     def __repr__(self):
         r = ("<TSeries(ixSeries:{s.ixSeries} sTitle{s.sTitle!r})>")
@@ -174,10 +174,10 @@ class TPresentation(Base):
     ixEventType = Column(Integer, ForeignKey('tEventType.ixEventType'))
     ixText = Column(Integer, ForeignKey('tScriptureReference.ixScriptureReference'), nullable=True)
     ixSeries = Column(Integer, ForeignKey('tSeries.ixSeries'), nullable=True)
-    sTitle = Column(Unicode(255), label='Title')
-    sTheme = Column(Text, label='Theme')
-    sComments = Column(Text, label='Comments') # Sermon points, general description, etc.
-    dtStart = Column(DateTime, label='Start of Presentation') # This will give us AM/PM info
+    sTitle = Column(Unicode(255), label=_('Title'))
+    sTheme = Column(Text, label=_('Theme'))
+    sComments = Column(Text, label=_('Comments')) # Sermon points, general description, etc.
+    dtStart = Column(DateTime, label=_('Start of Presentation')) # This will give us AM/PM info
 
     readings = relationship("TReading",
                             backref=backref('presentation'))
@@ -191,3 +191,44 @@ class TPresentation(Base):
              "sSeries={s.sSeries!r}, sTitle={s.sTitle!r}, sTheme={s.sTheme!r}, "
              "sComments={s.sComments!r}, dtStart={s.dtStart})>")
         return r.format(s=self)
+
+def create_sessionmaker(settings, prefix):
+    """
+        Returns a session factory.
+    """
+    engine = engine_from_config(settings, prefix)
+    return sessionmaker(
+        bind=engine,
+        extension=ZopeTransactionExtension(),
+    )
+
+def get_pk_map(instance):
+    """
+        Returns a map column_name --> value with the instance's primary keys.
+
+        Note: This probably won't work for strangely named columns (that
+        cannot act as python identifiers).
+    """
+    ret = {}
+    for column in instance.__table__.columns:
+        if column.primary_key:
+            ret[column.name] = getattr(instance, column.name)
+
+    return ret
+
+"""
+    We gather the names of all our models into model_names.
+"""
+#model_names = ['Person', 'Address', 'Nonid' ]
+model_names = []
+
+for (name, ent) in list(locals().items()):
+    if name.startswith("_"):
+        continue
+    if "Base"==name:
+        continue
+    try:
+        if issubclass(ent, Base):
+            model_names.append(name)
+    except:
+        pass

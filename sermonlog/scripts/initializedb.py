@@ -13,8 +13,8 @@ from pyramid.paster import (
 
 from pyramid.scripts.common import parse_vars
 
-from ..models import (
-    DBSession,
+from ..model.meta import (
+    create_sessionmaker,
     Base,
     TTitle,
     TPresenter,
@@ -57,9 +57,9 @@ def main(argv=sys.argv):
     options = parse_vars(argv[2:])
     setup_logging(config_uri)
     settings = get_appsettings(config_uri, options=options)
-    engine = engine_from_config(settings, 'sqlalchemy.')
-    DBSession.configure(bind=engine)
-    Base.metadata.create_all(engine)
+    DBSession = create_sessionmaker(settings, "sqlalchemy.")()
+    Base.metadata.create_all(DBSession.bind)
+
     with transaction.manager:
         titles = [TTitle(sTitle='Rev'),
                   TTitle(sTitle='Mr'),

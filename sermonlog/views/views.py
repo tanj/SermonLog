@@ -1,47 +1,83 @@
-from pyramid.response import Response
+from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 
-from sqlalchemy.exc import DBAPIError
+@view_config(context="faapp.model.resources.TopContext", renderer='/top.mako')
+def top(context, request):
+    """
+        The data needed to fulfill this request are stored
+        in request.context.
+    """
+    return { "models": context.get_models(), }
 
-from ..models import (
-    DBSession,
-    TPresenter,
-    )
+class ListItemsView(object):
+    """
+        A view for listing the objects, and paging and filtering.
+    """
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
 
-# TODO
-# Needed views:
-# 1. List of Sermons with filter options
-# 2. Add Sermon form
-# 3. Export Sermon info 
-#     - Info to be imported to audacity or mp3 tag edit program
-#     - Form write to sermon audio submit sermon form (API calls if they exist)
-# 4. Add other source
-# 5. Free form Search will need to detect scripture refs, presenters, and other
-#    key words
+    @view_config(context="faapp.model.resources.ModelContext", renderer="/list.mako")
+    def list(self):
+        return { "grid": self.context.get_grid(), }
 
+    @view_config(context="faapp.model.resources.ModelContext", name="filter")
+    def list_filter(self):
+        """
+            Apply filter in current context, as specified by the request params.
+            The request params should be in the form key=value. Then model's
+            field key must start with val.
+        """
+        filter = {}
+        for (k, v) in self.request.params.items():
+            if v and k in dir(self.context.model):
+                filter[k] = v
+        self.context.filter = filter
+        self.context.reset_pager()
+        return HTTPFound(location=self.request.resource_url(self.context))
 
-@view_config(route_name='home', renderer='sermonlog:templates/child.jinja2')
-def my_view(request):
-    try:
-        one = DBSession.query(TPresenter).first()
-    except DBAPIError:
-        return Response(conn_err_msg, content_type='text/plain', status_int=500)
-    return {'one': one, 'title': 'My View'}
+    @view_config(context="faapp.model.resources.ModelContext", name="prev")
+    def list_prev_page(self):
+        """
+            Move 1 page back.
+        """
+        self.context.pager = (
+            max(0, self.context.pager[0] - 1),
+            self.context.pager[1],
+        )
+        return HTTPFound(location=self.request.resource_url(self.context))
 
+    @view_config(context="faapp.model.resources.ModelContext", name="next")
+    def list_next_page(self):
+        """
+            Move 1 page forward.
+        """
+        self.context.pager = (self.context.pager[0] + 1, self.context.pager[1])
+        return HTTPFound(location=self.request.resource_url(self.context))
 
-conn_err_msg = """\
-Pyramid is having a problem using your SQL database.  The problem
-might be caused by one of the following things:
+@view_config(context="faapp.model.resources.NewItemContext", renderer="/edit.mako")
+@view_config(context="faapp.model.resources.ItemContext", renderer="/edit.mako")
+def edit(context, request):
+    """
+        Edit or save the object.
+    """
+    fs = context.get_fs()
 
-1.  You may need to run the "initialize_SermonLog_db" script
-    to initialize your database tables.  Check your virtual
-    environment's "bin" directory for this script and try to run it.
+    request_method = request.environ.get("REQUEST_METHOD", "").upper()
+    if "POST"==request_method and request.POST:
+        if fs.validate():
+            request.db.add(fs.model)
+            fs.sync()
+            return HTTPFound(location=request.resource_url(context.__parent__))
 
-2.  Your database server may not be running.  Check that the
-    database server referred to by the "sqlalchemy.url" setting in
-    your "development.ini" file is running.
+    return { 'fs': fs }
 
-After you fix the problem, please restart the Pyramid application to
-try it again.
-"""
+@view_config(context="faapp.model.resources.ItemContext", name="delete")
+def delete(context, request):
+    """
+        Delete the object.
+    """
+    obj = context.get_object()
+    request.db.delete(obj)
+    return HTTPFound(location=request.resource_url(context.__parent__))
 
