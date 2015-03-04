@@ -6,6 +6,10 @@ from sqlalchemy.orm import (
     class_mapper,
     )
 
+from sqlalchemy import (
+    Column,
+    )
+
 from . import fieldsets, grids, tools
 from . import meta
 
@@ -116,7 +120,10 @@ class ModelContext(object):
         params = urllib.parse.parse_qs(name)
         q = self.request.db.query(self.model)
         for i in class_mapper(self.model).primary_key:
-            q = q.filter(i==params[i.name][0])
+            i_type=int
+            if isinstance(i, Column):
+                i_type = i.type.python_type
+            q = q.filter(i==i_type(params[i.name][0]))
         return ItemContext(self, q.one())
 
     def __str__(self):
