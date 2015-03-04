@@ -5,7 +5,7 @@ import logging
 import sys
 import re
 
-from sermonlog.models import *
+from sermonlog.model.meta import *
 
 def make_session(connection_string):
     engine = create_engine(connection_string, echo=False, convert_unicode=True)

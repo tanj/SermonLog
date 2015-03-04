@@ -7,7 +7,9 @@ from sqlalchemy.orm import (
 
 from pyramid import testing
 from ..model.meta import (
-    Address, Person,
+    TPresenter, TTitle,
+    TBibleBook,TChapter,
+    TEventType,
     )
 
 class ModelTests(unittest.TestCase):
@@ -26,7 +28,7 @@ class ModelTests(unittest.TestCase):
         )()
 
         # now I have my db (session) and can do whatever I want with it
-        res = db.query(Address).filter(Address.line1=="one").all()
+        res = db.query(TTitle).filter(TTitle.sTitle=="Mr.").all()
 
         self.assertEqual(len(res), 0)
 
