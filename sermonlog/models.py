@@ -34,6 +34,9 @@ class TTitle(Base):
                     nullable=False,
                     label='Title')
 
+    def __unicode__(self):
+        return self.sTitle
+
     def __repr__(self):
         return "<TTitle(ixTitle:{s.ixTitle} sTitle={s.sTitle!r})>".format(s=self)
 

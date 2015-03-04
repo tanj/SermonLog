@@ -4,8 +4,10 @@
 
 <h1>{{ title }}</h1>
 
-{{ presenter.__label__ }}: {{ presenter.sSaName }}
-
-{{ form_render }}
-
+<form method="POST">
+<fieldset>
+{{ fs.render() }}
+<input type="submit" value="Submit">
+</fieldset>
+</form>
 {% endblock %}
