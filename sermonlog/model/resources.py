@@ -85,13 +85,48 @@ class ModelContext(object):
             self.pager[0], self.pager[1],
             urllib.parse.urlencode(self.filter),
         )
+
+    def get_filter(self, qattr, filt):
+        """
+            Return a filter expression
+        """
+        # do we have a string type column
+        qattr_type = qattr.property.columns[0].type.python_type
+
+        if qattr_type is str:
+            filt = filt.replace('*', '%')
+            return qattr.like(filt)
+
+        # get the comparison out of the filter string
+        # best way I can see is to check if comp in filt and then strip the comp
+        if '>=' in filt:
+            filt = filt.strip('>=')
+            return qattr >= qattr_type(filt)
+
+        if '<=' in filt:
+            filt = filt.strip('<=')
+            return qattr <= qattr_type(filt)
+
+        if '>' in filt:
+            filt = filt.strip('>')
+            return qattr > qattr_type(filt)
+
+        if '<' in filt:
+            filt = filt.strip('<')
+            return qattr < qattr_type(filt)
+
+        return qattr == qattr_type(filt)
+
     def get_grid(self):
         """
             Returns a grid for the dataset defined by this context.
         """
         q = self.request.db.query(self.model)
         for (k, v) in self.filter.items():
-            q = q.filter(self.model.__dict__[k].like("%s%%" % v))
+            # Need more than LIKE filters
+            qf = self.get_filter(self.model.__dict__[k], v)
+            logger.debug(qf)
+            q = q.filter(qf)
         grid_class = grids.__dict__.get(self.model_name, grids.Grid)
         pg_start = self.pager[0]*self.pager[1]
         return grid_class(
