@@ -194,7 +194,7 @@ class TPresentation(Base):
     def __repr__(self):
         r = ("<TPresentation(ixPresentation: {s.ixPresentation}, ixEventType={s.ixEventType}, "
              "ixText={s.ixText}, "
-             "sSeries={s.sSeries!r}, sTitle={s.sTitle!r}, sTheme={s.sTheme!r}, "
+             "ixSeries={s.ixSeries}, sTitle={s.sTitle!r}, sTheme={s.sTheme!r}, "
              "sComments={s.sComments!r}, dtStart={s.dtStart})>")
         return r.format(s=self)
 
