@@ -1,0 +1,112 @@
+
+
+* Notes on page layouts
+
+** Navigation items
+*** Presenters
+    - List of recent presenters
+    - search presenter
+    - 
+
+*** Presentations
+    - list of recent presentations
+
+*** New Presentation
+    - form for adding a new presentation
+    - 
+
+*** Advanced search
+    - by scripture ref/other ref
+    - by presenter
+    - by date
+    - by topic
+    - by comments
+    - etc.
+
+** 
+ 
+
+* Traversal Contexts
+This section describes the resource tree with each sub section being
+the next part of the tree
+
+** admin/
+   ModelAdminContext: (Former TopContext)
+
+This section will be for administrating the sqlalchemy model data in
+a very rough and direct fashion. A list of the sqlalchemy models
+linked to their ModelContext 
+
+*** <modelname>.<pager>.<filter>/
+    ModelContext:
+
+list model data in a paged list with links to edit, delete and create
+new. Simple filtering is also enabled.
+
+**** <primarykey=id>
+     ItemContext:
+
+Fieldset to edit item
+
+**** new
+     NewItemContext:
+
+Empty field set to create a new item
+
+** presenters/
+   PresenterListContext:
+
+List of presenters
+
+*** <id>/firstname-lastname
+    PresenterContext:
+
+firstname-lastname is given for search engine optimization
+
+*** new
+    NewPresenterContext:
+
+create a new presenter
+
+** presentations/
+   PresentationListContext:
+
+*** <id>/dash(title)/
+    PresentationContext:
+
+info on the presentation
+
+**** export/
+   ExportContext:
+
+The main reason right now for collecting this data is to be able to
+export it for the proper tagging of mp3 files and the automatic
+sermonaudio form submission
+
+***** mp3
+   ExportMp3Context:
+
+***** sermonaudio
+   ExportSaContext:
+
+
+*** new
+    NewPresentationContext:
+
+create new presentation
+
+
+** search/
+   SearchContext:
+
+Search isn't easy. I may need a bunch of ways to divide this
+up. Thinking of some kind of recursion or chaining sequence
+
+search/<biblebook>.<chapter>.<verse>/<event type>/<presenter search>
+
+would return the same results as
+
+search/<presenter search>/<biblebook>.<chapter>.<verse glob>/<event type>
+
+Multiple sections of the same type would OR
+
